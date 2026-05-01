@@ -1,0 +1,10 @@
+- [ ] NotifyAll() 不在持有 BotManager.mu 时获取 Bot.mu
+- [ ] RemoveBot() 不在 BotManager.mu 锁内调用 b.Stop()
+- [ ] Run() 使用 if-else 结构，无 continue
+- [ ] insertAt 包级函数已移除，逻辑内联到 RequeueAt
+- [ ] GetStatus() 返回的 pending 列表已按 VIP 优先排序
+- [ ] cmd/main.go 中无 sort.Slice 排序逻辑
+- [ ] Order.String() 使用数组索引替代 switch
+- [ ] go test ./... -race -count=1 全部通过
+- [ ] go vet ./... 无问题
+- [ ] go build ./... 编译通过

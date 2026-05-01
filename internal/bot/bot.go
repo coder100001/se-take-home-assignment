@@ -68,22 +68,18 @@ func (b *Bot) Run() {
 				b.mu.Unlock()
 				return
 			}
-			continue
-		}
-		select {
-		case <-b.stopChan:
-			return
-		case <-b.notifyNew:
+		} else {
+			select {
+			case <-b.stopChan:
+				return
+			case <-b.notifyNew:
+			}
 		}
 	}
 }
 
 func (b *Bot) Stop() {
 	close(b.stopChan)
-	<-b.doneChan
-}
-
-func (b *Bot) Wait() {
 	<-b.doneChan
 }
 
@@ -126,13 +122,16 @@ func (bm *BotManager) AddBot(q *queue.OrderQueue, om *order.OrderManager, notify
 
 func (bm *BotManager) RemoveBot() *Bot {
 	bm.mu.Lock()
-	defer bm.mu.Unlock()
 	if len(bm.bots) == 0 {
+		bm.mu.Unlock()
 		return nil
 	}
 	b := bm.bots[len(bm.bots)-1]
 	bm.bots = bm.bots[:len(bm.bots)-1]
+	bm.mu.Unlock()
+
 	b.Stop()
+
 	return b
 }
 
@@ -152,8 +151,11 @@ func (bm *BotManager) BotCount() int {
 
 func (bm *BotManager) NotifyAll() {
 	bm.mu.Lock()
-	defer bm.mu.Unlock()
-	for _, b := range bm.bots {
+	bots := make([]*Bot, len(bm.bots))
+	copy(bots, bm.bots)
+	bm.mu.Unlock()
+
+	for _, b := range bots {
 		b.mu.Lock()
 		if b.Status == Idle {
 			select {

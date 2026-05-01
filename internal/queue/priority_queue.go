@@ -59,7 +59,9 @@ func (q *OrderQueue) RequeueAt(o *order.Order, index int) {
 		if index > len(q.vipOrders) {
 			index = len(q.vipOrders)
 		}
-		q.vipOrders = insertAt(q.vipOrders, index, o)
+		q.vipOrders = append(q.vipOrders, nil)
+		copy(q.vipOrders[index+1:], q.vipOrders[index:])
+		q.vipOrders[index] = o
 	} else {
 		if index < 0 {
 			index = 0
@@ -67,15 +69,10 @@ func (q *OrderQueue) RequeueAt(o *order.Order, index int) {
 		if index > len(q.normalOrders) {
 			index = len(q.normalOrders)
 		}
-		q.normalOrders = insertAt(q.normalOrders, index, o)
+		q.normalOrders = append(q.normalOrders, nil)
+		copy(q.normalOrders[index+1:], q.normalOrders[index:])
+		q.normalOrders[index] = o
 	}
-}
-
-func insertAt(slice []*order.Order, index int, o *order.Order) []*order.Order {
-	slice = append(slice, nil)
-	copy(slice[index+1:], slice[index:])
-	slice[index] = o
-	return slice
 }
 
 func (q *OrderQueue) IsEmpty() bool {

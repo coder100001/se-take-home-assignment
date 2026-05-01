@@ -5,13 +5,12 @@ import (
 	"fmt"
 	"os"
 	"os/signal"
-	"sort"
 	"strings"
 	"syscall"
-	"time"
 
 	"github.com/feedme/order-controller/internal/controller"
 	"github.com/feedme/order-controller/internal/order"
+	"time"
 )
 
 func timestamp() string {
@@ -39,7 +38,6 @@ func main() {
 	go func() {
 		<-sigChan
 		ctrl.Shutdown()
-		fmt.Printf("\n[%s] Goodbye!\n", timestamp())
 		os.Exit(0)
 	}()
 
@@ -82,11 +80,9 @@ func main() {
 			}
 		case "status":
 			pending, processing, complete, bots := ctrl.GetStatus()
-			fmt.Printf("[%s] === Status ===\n", timestamp())
 
-			sort.Slice(pending, func(i, j int) bool {
-				return pending[i].Type > pending[j].Type
-			})
+			ts := timestamp()
+			fmt.Printf("[%s] === Status ===\n", ts)
 
 			var pendingStrs []string
 			for _, o := range pending {

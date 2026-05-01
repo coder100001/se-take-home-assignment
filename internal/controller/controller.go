@@ -4,6 +4,7 @@ import (
 	"github.com/feedme/order-controller/internal/bot"
 	"github.com/feedme/order-controller/internal/order"
 	"github.com/feedme/order-controller/internal/queue"
+	"sort"
 )
 
 type botInfo struct {
@@ -61,6 +62,10 @@ func (c *Controller) GetStatus() (pending []order.Order, processing []order.Orde
 		}
 	}
 
+	sort.Slice(pending, func(i, j int) bool {
+		return pending[i].Type > pending[j].Type
+	})
+
 	botList := c.botMgr.GetBots()
 	bots = make([]botInfo, 0, len(botList))
 	for _, b := range botList {
@@ -72,7 +77,7 @@ func (c *Controller) GetStatus() (pending []order.Order, processing []order.Orde
 		})
 	}
 
-	return
+	return pending, processing, complete, bots
 }
 
 func (c *Controller) Shutdown() {

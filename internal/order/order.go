@@ -30,26 +30,12 @@ type Order struct {
 	CreatedAt   time.Time
 }
 
+var typeStrs = [...]string{"NORMAL", "VIP"}
+
+var statusStrs = [...]string{"PENDING", "PROCESSING", "COMPLETE"}
+
 func (o *Order) String() string {
-	var typeStr string
-	switch o.Type {
-	case VIP:
-		typeStr = "VIP"
-	default:
-		typeStr = "NORMAL"
-	}
-
-	var statusStr string
-	switch o.Status {
-	case Pending:
-		statusStr = "PENDING"
-	case Processing:
-		statusStr = "PROCESSING"
-	case Complete:
-		statusStr = "COMPLETE"
-	}
-
-	return fmt.Sprintf("Order#%d (%s, %s)", o.ID, typeStr, statusStr)
+	return fmt.Sprintf("Order#%d (%s, %s)", o.ID, typeStrs[o.Type], statusStrs[o.Status])
 }
 
 type OrderManager struct {
